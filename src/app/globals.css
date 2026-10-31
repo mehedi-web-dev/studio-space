@@ -27,3 +27,60 @@ button,
 a {
   cursor: pointer;
 }
+
+
+/* StudioSpace Hero Slider */
+
+.studiospace-swiper .swiper-button-next,
+.studiospace-swiper .swiper-button-prev {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 15%);
+  color: white;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.studiospace-swiper .swiper-button-next:hover,
+.studiospace-swiper .swiper-button-prev:hover {
+  background: #c7f36b;
+  color: #171717;
+}
+
+.studiospace-swiper .swiper-button-next::after,
+.studiospace-swiper .swiper-button-prev::after {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.studiospace-swiper .swiper-pagination {
+  bottom: 25px !important;
+}
+
+.studiospace-swiper .swiper-pagination-bullet {
+  width: 9px;
+  height: 9px;
+  background: white;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.studiospace-swiper .swiper-pagination-bullet-active {
+  width: 28px;
+  border-radius: 10px;
+  background: #c7f36b;
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .studiospace-swiper .swiper-button-next,
+  .studiospace-swiper .swiper-button-prev {
+    display: none;
+  }
+
+  .studiospace-swiper .swiper-pagination {
+    bottom: 20px !important;
+  }
+}
