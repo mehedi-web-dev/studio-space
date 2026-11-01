@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Aperture, Menu, X, ArrowUpRight } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Aperture, LogOut, Menu, X, ArrowUpRight } from "lucide-react";
+import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -14,7 +16,40 @@ const navLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data: session } = authClient.useSession();
+
+  const user = session?.user;
+  const initials = user?.name
+    ?.split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const avatar = user && (
+    <>
+      {user.image ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={user.image}
+          alt={user.name ?? "Profile"}
+          className="h-10 w-10 shrink-0 rounded-full border border-[#e8e7e2] object-cover"
+        />
+      ) : (
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#171717] text-sm font-bold text-[#c7f36b]">
+          {initials}
+        </span>
+      )}
+    </>
+  );
+
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    toast.success("Signed out");
+    router.replace("/");
+  };
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -72,23 +107,47 @@ export default function Navbar() {
 
         {/* Desktop Actions */}
         <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/login"
-            className="rounded-full px-5 py-2.5 text-sm font-semibold text-[#171717] transition-colors hover:bg-[#eeede8]"
-          >
-            Log In
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-3">
+              {avatar}
+              <span className="flex flex-col leading-tight">
+                <span className="max-w-37.5truncate text-sm font-semibold text-[#171717]">
+                  {user.name}
+                </span>
+                <span className="max-w-37.5 truncate text-xs text-[#777777]">
+                  {user.email}
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                aria-label="Sign out"
+                className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#e8e7e2] text-[#777777] transition-colors hover:bg-[#eeede8] hover:text-[#171717]"
+              >
+                <LogOut size={18} />
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link
+                href="/sign-in"
+                className="rounded-full px-5 py-2.5 text-sm font-semibold text-[#171717] transition-colors hover:bg-[#eeede8]"
+              >
+                Log In
+              </Link>
 
-          <Link
-            href="/register"
-            className="group flex items-center gap-2 rounded-full bg-[#171717] px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-[#303030]"
-          >
-            Get Started
-            <ArrowUpRight
-              size={16}
-              className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-            />
-          </Link>
+              <Link
+                href="/sign-up"
+                className="group flex items-center gap-2 rounded-full bg-[#171717] px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-[#303030]"
+              >
+                Get Started
+                <ArrowUpRight
+                  size={16}
+                  className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                />
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -135,22 +194,52 @@ export default function Navbar() {
           </nav>
 
           <div className="mt-5 flex flex-col gap-3 border-t border-[#e8e7e2] pt-5">
-            <Link
-              href="/login"
-              onClick={() => setIsMenuOpen(false)}
-              className="rounded-full border border-[#e8e7e2] px-5 py-3 text-center text-sm font-semibold text-[#171717] transition-colors hover:bg-[#eeede8]"
-            >
-              Log In
-            </Link>
+            {user ? (
+              <>
+                <div className="flex items-center gap-3 px-1">
+                  {avatar}
+                  <span className="flex min-w-0 flex-col leading-tight">
+                    <span className="truncate text-sm font-semibold text-[#171717]">
+                      {user.name}
+                    </span>
+                    <span className="truncate text-xs text-[#777777]">
+                      {user.email}
+                    </span>
+                  </span>
+                </div>
 
-            <Link
-              href="/register"
-              onClick={() => setIsMenuOpen(false)}
-              className="flex items-center justify-center gap-2 rounded-full bg-[#171717] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#303030]"
-            >
-              Get Started
-              <ArrowUpRight size={16} />
-            </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    handleSignOut();
+                  }}
+                  className="flex items-center justify-center gap-2 rounded-full border border-[#e8e7e2] px-5 py-3 text-sm font-semibold text-[#171717] transition-colors hover:bg-[#eeede8]"
+                >
+                  <LogOut size={16} />
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="rounded-full border border-[#e8e7e2] px-5 py-3 text-center text-sm font-semibold text-[#171717] transition-colors hover:bg-[#eeede8]"
+                >
+                  Log In
+                </Link>
+
+                <Link
+                  href="/sign-up"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 rounded-full bg-[#171717] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#303030]"
+                >
+                  Get Started
+                  <ArrowUpRight size={16} />
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
