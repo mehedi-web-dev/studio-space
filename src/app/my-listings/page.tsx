@@ -257,11 +257,19 @@ export default function MyListingsPage() {
                         {new Date(studio.createdAt).toLocaleDateString()}
                       </p>
 
+                      {/* Edit Button */}
+                      <Link
+                        href={`/my-listings/edit/${studio._id}`}
+                        className="mt-4 block w-full rounded-xl border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                      >
+                        Edit Studio
+                      </Link>
+
                       {/* Delete Button */}
                       <button
                         type="button"
                         onClick={() => setSelectedStudio(studio._id)}
-                        className="mt-4 w-full rounded-xl border border-red-200 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                        className="mt-3 w-full rounded-xl border border-red-200 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
                       >
                         Delete Studio
                       </button>
