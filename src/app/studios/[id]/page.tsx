@@ -172,7 +172,7 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
         <h1 className="text-2xl font-bold text-gray-900">Studio Not Found</h1>
 
         <Link
-          href="/explore-studios"
+          href="/studios"
           className="mt-5 rounded-xl bg-[#c7f36b] px-6 py-3 font-semibold text-gray-900"
         >
           Explore Studios
@@ -186,7 +186,7 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
       <div className="mx-auto max-w-7xl">
         {/* Back Button */}
         <Link
-          href="/explore-studios"
+          href="/studios"
           className="mb-6 inline-flex text-sm font-semibold text-gray-600 hover:text-[#759c2c]"
         >
           ← Back to Studios

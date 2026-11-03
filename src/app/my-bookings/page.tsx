@@ -181,7 +181,7 @@ export default function MyBookingsPage() {
           </div>
 
           <Link
-            href="/explore-studios"
+            href="/studios"
             className="inline-flex items-center justify-center rounded-xl bg-[#c7f36b] px-5 py-3 text-sm font-bold text-gray-900 transition hover:bg-[#b8e65b]"
           >
             Explore Studios
@@ -229,7 +229,7 @@ export default function MyBookingsPage() {
             </p>
 
             <Link
-              href="/explore-studios"
+              href="/studios"
               className="mt-6 inline-flex rounded-xl bg-[#c7f36b] px-6 py-3 text-sm font-bold text-gray-900 transition hover:bg-[#b8e65b]"
             >
               Explore Studios
