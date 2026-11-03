@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
+
 import Navbar from "./component/Navbar";
 import Footer from "./component/Footer";
+import Providers from "./providers";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
@@ -19,13 +21,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <Navbar></Navbar>
-        {children}
+        <Providers>
+          <Navbar />
 
-        <Footer></Footer>
-        <Toaster position="bottom-right" richColors />
+          {children}
+
+          <Footer />
+
+          <Toaster position="bottom-right" richColors />
+        </Providers>
       </body>
     </html>
   );

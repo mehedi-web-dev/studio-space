@@ -1,12 +1,29 @@
+
 @import "tailwindcss";
 @import "@heroui/styles";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  color-scheme: light;
+
   --background: #f8f7f4;
   --foreground: #191919;
   --primary: #c7f36b;
   --surface: #ffffff;
   --border: #e8e7e2;
+  --muted: #777777;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: #111827;
+  --foreground: #f9fafb;
+  --primary: #c7f36b;
+  --surface: #1f2937;
+  --border: #374151;
+  --muted: #9ca3af;
 }
 
 * {
@@ -21,6 +38,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 button,
@@ -28,6 +48,27 @@ a {
   cursor: pointer;
 }
 
+/* Reusable Theme Classes */
+
+.theme-bg {
+  background: var(--background);
+}
+
+.theme-surface {
+  background: var(--surface);
+}
+
+.theme-text {
+  color: var(--foreground);
+}
+
+.theme-muted {
+  color: var(--muted);
+}
+
+.theme-border {
+  border-color: var(--border);
+}
 
 /* StudioSpace Hero Slider */
 
