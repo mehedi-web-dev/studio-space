@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -15,14 +15,64 @@ interface IStudio {
   image: string;
   amenities: string[];
   description: string;
+  rating?: number;
   createdAt: string;
+}
+
+const defaultCategories = [
+  "All",
+  "Photo Studio",
+  "Film Stage",
+  "Podcast Lounge",
+  "Music Suite",
+  "Workshop",
+];
+
+// Subscribe to browser URL changes
+function subscribeToURL(callback: () => void) {
+  window.addEventListener("popstate", callback);
+  window.addEventListener("categorychange", callback);
+
+  return () => {
+    window.removeEventListener("popstate", callback);
+    window.removeEventListener("categorychange", callback);
+  };
+}
+
+// Read selected category from URL
+function getCategoryFromURL() {
+  return new URLSearchParams(window.location.search).get("category") || "All";
+}
+
+function getServerCategory() {
+  return "All";
 }
 
 export default function ExploreStudiosPage() {
   const [studios, setStudios] = useState<IStudio[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  // Read category directly from URL
+  const selectedCategory = useSyncExternalStore(
+    subscribeToURL,
+    getCategoryFromURL,
+    getServerCategory,
+  );
+
+  // Update URL when category changes
+  const handleCategoryChange = (category: string) => {
+    const url = new URL(window.location.href);
+
+    if (category === "All") {
+      url.searchParams.delete("category");
+    } else {
+      url.searchParams.set("category", category);
+    }
+
+    window.history.pushState(null, "", url);
+    window.dispatchEvent(new Event("categorychange"));
+  };
 
   // Fetch all studios from backend
   useEffect(() => {
@@ -51,22 +101,32 @@ export default function ExploreStudiosPage() {
 
   // Available categories
   const categories = [
-    "All",
-    ...Array.from(new Set(studios.map((studio) => studio.category))),
+    ...defaultCategories,
+    ...Array.from(new Set(studios.map((studio) => studio.category))).filter(
+      (category) => !defaultCategories.includes(category),
+    ),
   ];
 
   // Search and category filtering
   const filteredStudios = studios.filter((studio) => {
+    const searchTerm = search.toLowerCase();
+
     const matchesSearch =
-      studio.title.toLowerCase().includes(search.toLowerCase()) ||
-      studio.location.toLowerCase().includes(search.toLowerCase()) ||
-      studio.category.toLowerCase().includes(search.toLowerCase());
+      studio.title.toLowerCase().includes(searchTerm) ||
+      studio.location.toLowerCase().includes(searchTerm) ||
+      studio.category.toLowerCase().includes(searchTerm);
 
     const matchesCategory =
       selectedCategory === "All" || studio.category === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
+
+  // Clear filters
+  const clearFilters = () => {
+    setSearch("");
+    handleCategoryChange("All");
+  };
 
   return (
     <main className="min-h-screen bg-[#f8f7f4] px-5 py-12">
@@ -113,7 +173,7 @@ export default function ExploreStudiosPage() {
 
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={(e) => handleCategoryChange(e.target.value)}
                 className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#759c2c]"
               >
                 {categories.map((category) => (
@@ -167,10 +227,7 @@ export default function ExploreStudiosPage() {
 
             <button
               type="button"
-              onClick={() => {
-                setSearch("");
-                setSelectedCategory("All");
-              }}
+              onClick={clearFilters}
               className="mt-6 rounded-xl bg-[#c7f36b] px-6 py-3 text-sm font-bold text-gray-900 transition hover:bg-[#b8e65b]"
             >
               Clear Filters
@@ -195,6 +252,12 @@ export default function ExploreStudiosPage() {
                   <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-gray-800 shadow-sm">
                     {studio.category}
                   </span>
+
+                  {typeof studio.rating === "number" && (
+                    <span className="absolute right-4 top-4 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-gray-800 shadow-sm">
+                      ★ {studio.rating.toFixed(1)}
+                    </span>
+                  )}
                 </div>
 
                 {/* Studio Information */}

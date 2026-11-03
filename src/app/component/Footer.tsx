@@ -1,131 +1,105 @@
-"use client";
-
 import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
+import { Mail, MapPin, Phone } from "lucide-react";
 
 import {
-  // FaAperture,
-  FaArrowUpRightFromSquare,
   FaFacebookF,
   FaInstagram,
   FaLinkedinIn,
   FaXTwitter,
-  FaEnvelope,
 } from "react-icons/fa6";
 
-const quickLinks = [
-  { name: "Home", href: "/" },
-  { name: "Explore Studios", href: "/studios" },
-  { name: "How It Works", href: "/#how-it-works" },
-  { name: "About Us", href: "/about" },
-];
+const Footer = () => {
+  const quickLinks = [
+    { name: "Home", href: "/" },
+    { name: "Explore Studios", href: "/studios" },
+    { name: "How It Works", href: "/#how-it-works" },
+    { name: "About Us", href: "/#about-us" },
+  ];
 
-const studioCategories = [
-  { name: "Photo Studios", category: "Photo Studio" },
-  { name: "Film Stages", category: "Film Stage" },
-  { name: "Podcast Lounges", category: "Podcast Lounge" },
-  { name: "Music Suites", category: "Music Suite" },
-  { name: "Art Workshops", category: "Workshop" },
-];
-
-const socialLinks = [
-  {
-    name: "Facebook",
-    href: "https://www.facebook.com/",
-    icon: FaFacebookF,
-  },
-  {
-    name: "Instagram",
-    href: "https://www.instagram.com/",
-    icon: FaInstagram,
-  },
-  {
-    name: "LinkedIn",
-    href: "https://www.linkedin.com/",
-    icon: FaLinkedinIn,
-  },
-  {
-    name: "X",
-    href: "https://x.com/",
-    icon: FaXTwitter,
-  },
-];
-
-export default function Footer() {
-  const [email, setEmail] = useState("");
-
-  const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!email.trim()) {
-      toast.error("Please enter your email address.");
-      return;
-    }
-
-    toast.info(
-      "Newsletter subscription will be available after backend integration.",
-    );
-
-    setEmail("");
-  };
+  const categories = [
+    { name: "Photo Studios", href: "/studios?category=Photo%20Studio" },
+    { name: "Film Stages", href: "/studios?category=Film%20Stage" },
+    { name: "Podcast Lounges", href: "/studios?category=Podcast%20Lounge" },
+    { name: "Music Suites", href: "/studios?category=Music%20Suite" },
+    { name: "Workshops", href: "/studios?category=Workshop" },
+  ];
 
   return (
-    <footer className="bg-[#171717] text-white">
-      <div className="mx-auto max-w-7xl px-5 pb-12 pt-16 lg:px-8 lg:pt-20">
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
-          {/* Brand Section */}
-          <div className="lg:col-span-4">
-            <Link href="/" className="inline-flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#c7f36b] text-[#171717]">
-                {/* <FaAperture size={26} /> */}
+    <footer className="bg-[#101828] text-white">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Brand and Mission */}
+          <div>
+            <Link href="/" className="inline-flex items-center gap-2">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-xl font-bold">
+                S
               </span>
 
-              <span className="text-2xl font-extrabold tracking-tight">
-                Studio
-                <span className="text-[#c7f36b]">Space.</span>
+              <span className="text-2xl font-bold tracking-tight">
+                Studio<span className="text-indigo-400">Space</span>
               </span>
             </Link>
 
-            <p className="mt-6 max-w-sm text-sm leading-7 text-[#a5a5a5]">
-              Discover inspiring creative spaces and bring your next big idea to
-              life. Connect with professional studios, create meaningful work,
-              and make every moment count.
+            <p className="mt-5 max-w-xs text-sm leading-7 text-gray-400">
+              Connecting creators with inspiring spaces. Discover and book
+              professional studios for photography, filmmaking, music, podcasts,
+              and creative projects.
             </p>
 
             {/* Social Links */}
-            <div className="mt-7 flex items-center gap-3">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
+            <div className="mt-5 flex gap-3">
+              <a
+                href="https://www.facebook.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="rounded-lg bg-white/10 p-2.5 transition hover:bg-indigo-600"
+              >
+                <FaFacebookF size={18} />
+              </a>
 
-                return (
-                  <a
-                    key={social.name}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={social.name}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#383838] text-[#b5b5b5] transition-all duration-300 hover:border-[#c7f36b] hover:bg-[#c7f36b] hover:text-[#171717]"
-                  >
-                    <Icon size={17} />
-                  </a>
-                );
-              })}
+              <a
+                href="https://x.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X"
+                className="rounded-lg bg-white/10 p-2.5 transition hover:bg-indigo-600"
+              >
+                <FaXTwitter size={18} />
+              </a>
+
+              <a
+                href="https://www.instagram.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="rounded-lg bg-white/10 p-2.5 transition hover:bg-indigo-600"
+              >
+                <FaInstagram size={18} />
+              </a>
+
+              <a
+                href="https://www.linkedin.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="rounded-lg bg-white/10 p-2.5 transition hover:bg-indigo-600"
+              >
+                <FaLinkedinIn size={18} />
+              </a>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="lg:col-span-2 lg:col-start-6">
-            <h3 className="mb-6 text-sm font-bold tracking-wide text-white">
-              Quick Links
-            </h3>
+          <div>
+            <h3 className="text-lg font-semibold">Quick Links</h3>
 
-            <ul className="space-y-4">
+            <ul className="mt-5 space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[#a5a5a5] transition-colors hover:text-[#c7f36b]"
+                    className="text-sm text-gray-400 transition hover:text-indigo-400"
                   >
                     {link.name}
                   </Link>
@@ -134,93 +108,87 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Studio Categories */}
-          <div className="lg:col-span-2">
-            <h3 className="mb-6 text-sm font-bold tracking-wide text-white">
-              Explore Spaces
-            </h3>
+          {/* Categories */}
+          <div>
+            <h3 className="text-lg font-semibold">Studio Categories</h3>
 
-            <ul className="space-y-4">
-              {studioCategories.map((item) => (
-                <li key={item.category}>
+            <ul className="mt-5 space-y-3">
+              {categories.map((category) => (
+                <li key={category.name}>
                   <Link
-                    href={`/studios?category=${encodeURIComponent(item.category)}`}
-                    className="text-sm text-[#a5a5a5] transition-colors hover:text-[#c7f36b]"
+                    href={category.href}
+                    className="text-sm text-gray-400 transition hover:text-indigo-400"
                   >
-                    {item.name}
+                    {category.name}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Newsletter */}
-          <div className="lg:col-span-2">
-            <h3 className="mb-6 text-sm font-bold tracking-wide text-white">
-              Stay Inspired
-            </h3>
+          {/* Newsletter and Contact */}
+          <div>
+            <h3 className="text-lg font-semibold">Stay Connected</h3>
 
-            <p className="mb-5 text-sm leading-6 text-[#a5a5a5]">
-              Get creative inspiration, new studio discoveries, and updates
-              delivered to your inbox.
+            <p className="mt-5 text-sm leading-6 text-gray-400">
+              Get updates about new studios and creative spaces.
             </p>
 
-            <form onSubmit={handleSubscribe} className="space-y-3">
-              <div className="flex items-center gap-2 rounded-xl border border-[#383838] bg-[#222222] px-3 py-3 focus-within:border-[#c7f36b]">
-                <FaEnvelope size={16} className="shrink-0 text-[#999999]" />
-
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email address"
-                  aria-label="Your email address"
-                  className="w-full min-w-0 bg-transparent text-sm text-white outline-none placeholder:text-[#777777]"
-                />
-              </div>
+            <div className="mt-4 flex">
+              <input
+                type="email"
+                placeholder="Your email address"
+                aria-label="Your email address"
+                required
+                className="min-w-0 flex-1 rounded-l-lg border border-white/10 bg-white/10 px-3 py-3 text-sm text-white outline-none placeholder:text-gray-500 focus:border-indigo-400"
+              />
 
               <button
-                type="submit"
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c7f36b] px-4 py-3 text-sm font-bold text-[#171717] transition-all duration-300 hover:bg-[#d5ff80]"
+                type="button"
+                className="rounded-r-lg bg-indigo-600 px-4 text-sm font-semibold transition hover:bg-indigo-700"
               >
-                Subscribe
-                <FaArrowUpRightFromSquare size={14} />
+                Join
               </button>
-            </form>
+            </div>
+
+            <div className="mt-6 space-y-3 text-sm text-gray-400">
+              <p className="flex items-center gap-2">
+                <Mail size={16} />
+                support@studiospace.com
+              </p>
+
+              <p className="flex items-center gap-2">
+                <Phone size={16} />
+                +880 1XXX-XXXXXX
+              </p>
+
+              <p className="flex items-center gap-2">
+                <MapPin size={16} />
+                Dhaka, Bangladesh
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Footer Bottom */}
-        <div className="mt-16 flex flex-col gap-5 border-t border-[#383838] pt-7 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-[#888888]">
+        {/* Bottom Footer */}
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-7 text-center sm:flex-row sm:text-left">
+          <p className="text-sm text-gray-500">
             © {new Date().getFullYear()} StudioSpace. All rights reserved.
           </p>
 
-          <div className="flex flex-wrap items-center gap-6">
-            <Link
-              href="/privacy"
-              className="text-xs text-[#888888] transition-colors hover:text-[#c7f36b]"
-            >
-              Privacy Policy
-            </Link>
-
-            <Link
-              href="/terms"
-              className="text-xs text-[#888888] transition-colors hover:text-[#c7f36b]"
-            >
+          <div className="flex gap-6 text-sm text-gray-400">
+            <Link href="/terms" className="transition hover:text-white">
               Terms & Conditions
             </Link>
 
-            <Link
-              href="/about"
-              className="text-xs text-[#888888] transition-colors hover:text-[#c7f36b]"
-            >
-              About Us
+            <Link href="/privacy" className="transition hover:text-white">
+              Privacy Policy
             </Link>
           </div>
         </div>
       </div>
     </footer>
   );
-}
+};
+
+export default Footer;
