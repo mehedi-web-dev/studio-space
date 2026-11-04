@@ -14,6 +14,9 @@ function createAuth() {
     throw new Error("MONGODB_URI environment variable is required");
   }
 
+  const googleClientId = process.env.GOOGLE_CLIENT_ID;
+  const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
   const client = new MongoClient(mongoUri);
   const db = client.db("studio-space");
 
@@ -26,10 +29,23 @@ function createAuth() {
       enabled: true,
     },
 
+    // Google OAuth Configuration
+    socialProviders: {
+      ...(googleClientId && googleClientSecret
+        ? {
+            google: {
+              clientId: googleClientId,
+              clientSecret: googleClientSecret,
+            },
+          }
+        : {}),
+    },
+
     database: mongodbAdapter(db, {
       client,
     }),
 
+    // Session Cookie Configuration
     session: {
       cookieCache: {
         enabled: true,
@@ -45,8 +61,6 @@ function createAuth() {
     ],
 
     advanced: {
-      // HTTPOnly and Secure defaults are kept; pin path and same-origin
-      // SameSite behavior (no cross-subdomain cookies).
       defaultCookieAttributes: {
         path: "/",
         sameSite: "lax",
@@ -55,11 +69,7 @@ function createAuth() {
   });
 }
 
-/**
- * Lazily initializes Better Auth on first request instead of at module scope.
- * This keeps `next build` from failing when runtime-only environment
- * variables (e.g. MONGODB_URI) are not present at build time.
- */
+
 export function getAuth() {
   authInstance ??= createAuth();
   return authInstance;
