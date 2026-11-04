@@ -3,23 +3,23 @@ import { ArrowLeft, Home, Search } from "lucide-react";
 
 const NotFound = () => {
   return (
-    <main className="flex min-h-[75vh] items-center justify-center bg-gray-50 px-4 py-16">
+    <main className="flex min-h-[75vh] items-center justify-center bg-gray-50 px-4 py-16 transition-colors dark:bg-gray-950">
       <div className="mx-auto max-w-xl text-center">
         <div className="mb-6 flex justify-center">
-          <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-indigo-100">
-            <Search className="h-12 w-12 text-indigo-600" />
+          <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-indigo-100 dark:bg-indigo-500/15">
+            <Search className="h-12 w-12 text-indigo-600 dark:text-indigo-400" />
           </div>
         </div>
 
-        <p className="text-8xl font-extrabold tracking-tight text-indigo-600">
+        <p className="text-8xl font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400">
           404
         </p>
 
-        <h1 className="mt-5 text-3xl font-bold text-gray-900 sm:text-4xl">
+        <h1 className="mt-5 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
           Page Not Found
         </h1>
 
-        <p className="mx-auto mt-4 max-w-md text-base leading-7 text-gray-500">
+        <p className="mx-auto mt-4 max-w-md text-base leading-7 text-gray-500 dark:text-gray-400">
           Sorry, the page you are looking for does not exist or may have been
           moved. Let&apos;s help you find the right creative space.
         </p>
@@ -35,14 +35,14 @@ const NotFound = () => {
 
           <Link
             href="/studios"
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:border-indigo-600 hover:text-indigo-600"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:border-indigo-600 hover:text-indigo-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-indigo-400 dark:hover:text-indigo-400"
           >
             <ArrowLeft size={18} />
             Explore Studios
           </Link>
         </div>
 
-        <p className="mt-10 text-sm text-gray-400">
+        <p className="mt-10 text-sm text-gray-400 dark:text-gray-500">
           StudioSpace — Find your perfect creative space.
         </p>
       </div>

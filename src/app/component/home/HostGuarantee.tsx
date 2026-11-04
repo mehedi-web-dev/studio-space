@@ -33,19 +33,19 @@ const guarantees = [
 
 export default function HostGuarantee() {
   return (
-    <section className="bg-white px-5 py-20">
+    <section className="bg-white px-5 py-20 transition-colors duration-300 dark:bg-[#121212]">
       <div className="mx-auto max-w-7xl">
         {/* Section Heading */}
         <div className="mx-auto mb-14 max-w-2xl text-center">
-          <p className="text-sm font-bold uppercase tracking-widest text-[#759c2c]">
+          <p className="text-sm font-bold uppercase tracking-widest text-[#759c2c] dark:text-[#c7f36b]">
             Your Creative Journey Matters
           </p>
 
-          <h2 className="mt-3 text-3xl font-extrabold text-gray-900 sm:text-4xl">
+          <h2 className="mt-3 text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
             Your Space, Our Commitment
           </h2>
 
-          <p className="mt-4 text-sm leading-7 text-gray-500 sm:text-base">
+          <p className="mt-4 text-sm leading-7 text-gray-500 dark:text-gray-400 sm:text-base">
             We focus on creating a reliable experience for studio hosts and
             creators at every step of the booking journey.
           </p>
@@ -59,25 +59,25 @@ export default function HostGuarantee() {
             return (
               <div
                 key={item.number}
-                className="group rounded-2xl border border-gray-100 bg-[#f8f7f4] p-7 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-lg"
+                className="group rounded-2xl border border-gray-100 bg-[#f8f7f4] p-7 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-lg dark:border-[#333333] dark:bg-[#1c1c1c] dark:hover:bg-[#252525] dark:hover:shadow-black/30"
               >
                 {/* Icon and Number */}
                 <div className="flex items-center justify-between">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eaf6d4] text-[#759c2c] transition group-hover:bg-[#c7f36b]">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eaf6d4] text-[#759c2c] transition group-hover:bg-[#c7f36b] dark:bg-[#303d22] dark:text-[#c7f36b] dark:group-hover:bg-[#c7f36b] dark:group-hover:text-[#171717]">
                     <Icon size={27} strokeWidth={1.8} />
                   </div>
 
-                  <span className="text-3xl font-extrabold text-gray-200">
+                  <span className="text-3xl font-extrabold text-gray-200 dark:text-[#353535]">
                     {item.number}
                   </span>
                 </div>
 
                 {/* Content */}
-                <h3 className="mt-7 text-lg font-bold text-gray-900">
+                <h3 className="mt-7 text-lg font-bold text-gray-900 dark:text-white">
                   {item.title}
                 </h3>
 
-                <p className="mt-3 text-sm leading-7 text-gray-500">
+                <p className="mt-3 text-sm leading-7 text-gray-500 dark:text-gray-400">
                   {item.description}
                 </p>
               </div>

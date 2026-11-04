@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
+import { API_URL } from "@/lib/api";
 
 export default function TestAuthPage() {
   const [loading, setLoading] = useState(false);
@@ -12,19 +12,12 @@ export default function TestAuthPage() {
       setLoading(true);
       setResult("");
 
-      // Get JWT token from Better Auth
-      const { data, error } = await authClient.token();
-
-      if (error || !data?.token) {
-        setResult("Failed to get JWT token. Please login first.");
-        return;
-      }
-
-      // Send JWT token to Express backend
-      const response = await fetch("http://localhost:8000/api/protected", {
-        headers: {
-          Authorization: `Bearer ${data.token}`,
-        },
+      // Call the protected backend endpoint through the same-origin proxy,
+      // sending the Better Auth HTTPOnly session cookie. No Bearer token
+      // or client-held JWT is used.
+      const response = await fetch(`${API_URL}/api/protected`, {
+        method: "GET",
+        credentials: "include",
       });
 
       const responseData = await response.json();

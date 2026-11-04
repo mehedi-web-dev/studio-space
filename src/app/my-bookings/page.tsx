@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+import { API_URL } from "@/lib/api";
 
 interface IBooking {
   _id: string;
@@ -46,20 +48,10 @@ export default function MyBookingsPage() {
 
     const fetchMyBookings = async () => {
       try {
-        const { data: tokenData, error: tokenError } = await authClient.token();
-
-        if (tokenError || !tokenData?.token) {
-          throw new Error("Authentication failed. Please login again.");
-        }
-
-        const response = await fetch(
-          "http://localhost:8000/api/bookings/my-bookings",
-          {
-            headers: {
-              Authorization: `Bearer ${tokenData.token}`,
-            },
-          },
-        );
+        const response = await fetch(`${API_URL}/api/bookings/my-bookings`, {
+          method: "GET",
+          credentials: "include",
+        });
 
         const result = await response.json();
 
@@ -67,7 +59,7 @@ export default function MyBookingsPage() {
           throw new Error(result.message || "Failed to load bookings.");
         }
 
-        setBookings(result.data);
+        setBookings(Array.isArray(result.data) ? result.data : []);
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong.",
@@ -87,21 +79,11 @@ export default function MyBookingsPage() {
     try {
       setCancelling(true);
 
-      // Get JWT Token
-      const { data: tokenData, error: tokenError } = await authClient.token();
-
-      if (tokenError || !tokenData?.token) {
-        throw new Error("Authentication failed. Please login again.");
-      }
-
-      // Send Cancel Request
       const response = await fetch(
-        `http://localhost:8000/api/bookings/${selectedBooking}/cancel`,
+        `${API_URL}/api/bookings/${selectedBooking}/cancel`,
         {
           method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${tokenData.token}`,
-          },
+          credentials: "include",
         },
       );
 
@@ -111,7 +93,6 @@ export default function MyBookingsPage() {
         throw new Error(result.message || "Failed to cancel booking.");
       }
 
-      // Update Booking Status
       setBookings((prevBookings) =>
         prevBookings.map((booking) =>
           booking._id === selectedBooking
@@ -136,46 +117,48 @@ export default function MyBookingsPage() {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "pending":
-        return "bg-yellow-100 text-yellow-700";
+        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-400";
 
       case "confirmed":
-        return "bg-green-100 text-green-700";
+        return "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400";
 
       case "completed":
-        return "bg-blue-100 text-blue-700";
+        return "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400";
 
       case "cancelled":
-        return "bg-red-100 text-red-700";
+        return "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400";
 
       default:
-        return "bg-gray-100 text-gray-700";
+        return "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300";
     }
   };
 
   // Loading State
   if (isPending || loading) {
     return (
-      <main className="flex min-h-[60vh] items-center justify-center bg-[#f8f7f4]">
-        <p className="text-sm text-gray-500">Loading your bookings...</p>
+      <main className="flex min-h-[60vh] items-center justify-center bg-[#f8f7f4] transition-colors duration-300 dark:bg-[#111827]">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Loading your bookings...
+        </p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#f8f7f4] px-5 py-12">
+    <main className="min-h-screen bg-[#f8f7f4] px-5 py-12 transition-colors duration-300 dark:bg-[#111827]">
       <div className="mx-auto max-w-7xl">
         {/* Page Header */}
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <p className="text-sm font-semibold text-[#759c2c]">
+            <p className="text-sm font-semibold text-[#759c2c] dark:text-[#c7f36b]">
               CREATOR DASHBOARD
             </p>
 
-            <h1 className="mt-2 text-3xl font-extrabold text-gray-900">
+            <h1 className="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white">
               My Bookings
             </h1>
 
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
               Manage and track all your studio reservations.
             </p>
           </div>
@@ -190,30 +173,36 @@ export default function MyBookingsPage() {
 
         {/* Booking Statistics */}
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-gray-100 bg-white p-5">
-            <p className="text-sm text-gray-500">Total Bookings</p>
-            <p className="mt-2 text-2xl font-bold text-gray-900">
+          <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Total Bookings
+            </p>
+            <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
               {bookings.length}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-100 bg-white p-5">
-            <p className="text-sm text-gray-500">Pending</p>
-            <p className="mt-2 text-2xl font-bold text-yellow-600">
+          <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Pending</p>
+            <p className="mt-2 text-2xl font-bold text-yellow-600 dark:text-yellow-400">
               {bookings.filter((b) => b.status === "pending").length}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-100 bg-white p-5">
-            <p className="text-sm text-gray-500">Confirmed</p>
-            <p className="mt-2 text-2xl font-bold text-green-600">
+          <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Confirmed
+            </p>
+            <p className="mt-2 text-2xl font-bold text-green-600 dark:text-green-400">
               {bookings.filter((b) => b.status === "confirmed").length}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-100 bg-white p-5">
-            <p className="text-sm text-gray-500">Cancelled</p>
-            <p className="mt-2 text-2xl font-bold text-red-600">
+          <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Cancelled
+            </p>
+            <p className="mt-2 text-2xl font-bold text-red-600 dark:text-red-400">
               {bookings.filter((b) => b.status === "cancelled").length}
             </p>
           </div>
@@ -221,10 +210,12 @@ export default function MyBookingsPage() {
 
         {/* Empty State */}
         {bookings.length === 0 ? (
-          <div className="rounded-2xl border border-gray-200 bg-white px-5 py-16 text-center">
-            <h2 className="text-xl font-bold text-gray-900">No Bookings Yet</h2>
+          <div className="rounded-2xl border border-gray-200 bg-white px-5 py-16 text-center dark:border-gray-700 dark:bg-gray-800">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              No Bookings Yet
+            </h2>
 
-            <p className="mt-3 text-sm text-gray-500">
+            <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
               You haven&apos;t booked any creative studio yet.
             </p>
 
@@ -241,15 +232,20 @@ export default function MyBookingsPage() {
             {bookings.map((booking) => (
               <article
                 key={booking._id}
-                className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm"
+                className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-colors duration-300 dark:border-gray-700 dark:bg-gray-800"
               >
                 <div className="grid md:grid-cols-[240px_1fr]">
                   {/* Studio Image */}
-                  <img
-                    src={booking.studioImage}
-                    alt={booking.studioTitle}
-                    className="h-52 w-full object-cover md:h-full"
-                  />
+                  <div className="relative h-52 w-full bg-gray-200 dark:bg-gray-700 md:h-full">
+                    <Image
+                      src={booking.studioImage}
+                      alt={booking.studioTitle}
+                      fill
+                      unoptimized
+                      sizes="(max-width: 768px) 100vw, 240px"
+                      className="object-cover"
+                    />
+                  </div>
 
                   {/* Booking Information */}
                   <div className="p-5 sm:p-6">
@@ -262,25 +258,27 @@ export default function MyBookingsPage() {
                         {booking.status}
                       </span>
 
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
                         Booking ID: {booking._id.slice(-8)}
                       </span>
                     </div>
 
-                    <h2 className="mt-4 text-xl font-bold text-gray-900">
+                    <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">
                       {booking.studioTitle}
                     </h2>
 
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                       Hosted by {booking.hostName}
                     </p>
 
                     {/* Booking Details */}
                     <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       <div>
-                        <p className="text-xs text-gray-500">Booking Date</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Booking Date
+                        </p>
 
-                        <p className="mt-1 text-sm font-semibold text-gray-800">
+                        <p className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-200">
                           {new Date(
                             `${booking.bookingDate}T12:00:00`,
                           ).toLocaleDateString()}
@@ -288,28 +286,34 @@ export default function MyBookingsPage() {
                       </div>
 
                       <div>
-                        <p className="text-xs text-gray-500">Booking Time</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Booking Time
+                        </p>
 
-                        <p className="mt-1 text-sm font-semibold text-gray-800">
+                        <p className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-200">
                           {booking.startTime} - {booking.endTime}
                         </p>
                       </div>
 
                       <div>
-                        <p className="text-xs text-gray-500">Duration</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Duration
+                        </p>
 
-                        <p className="mt-1 text-sm font-semibold text-gray-800">
+                        <p className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-200">
                           {booking.totalHours} Hours
                         </p>
                       </div>
                     </div>
 
                     {/* Price Information */}
-                    <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-5">
+                    <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-5 dark:border-gray-700">
                       <div>
-                        <p className="text-xs text-gray-500">Total Amount</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Total Amount
+                        </p>
 
-                        <p className="mt-1 text-2xl font-extrabold text-gray-900">
+                        <p className="mt-1 text-2xl font-extrabold text-gray-900 dark:text-white">
                           ${booking.totalAmount}
                         </p>
                       </div>
@@ -317,7 +321,7 @@ export default function MyBookingsPage() {
                       <div className="flex flex-wrap gap-3">
                         <Link
                           href={`/studios/${booking.studioId}`}
-                          className="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                          className="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
                         >
                           View Studio
                         </Link>
@@ -327,7 +331,7 @@ export default function MyBookingsPage() {
                           <button
                             type="button"
                             onClick={() => setSelectedBooking(booking._id)}
-                            className="rounded-xl border border-red-200 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                            className="rounded-xl border border-red-200 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/40"
                           >
                             Cancel Booking
                           </button>
@@ -352,10 +356,12 @@ export default function MyBookingsPage() {
             }
           }}
         >
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h2 className="text-xl font-bold text-gray-900">Cancel Booking?</h2>
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Cancel Booking?
+            </h2>
 
-            <p className="mt-3 text-sm leading-6 text-gray-500">
+            <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-gray-300">
               Are you sure you want to cancel this booking? This action cannot
               be undone.
             </p>
@@ -365,7 +371,7 @@ export default function MyBookingsPage() {
                 type="button"
                 disabled={cancelling}
                 onClick={() => setSelectedBooking(null)}
-                className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 disabled:opacity-50"
+                className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
               >
                 Keep Booking
               </button>

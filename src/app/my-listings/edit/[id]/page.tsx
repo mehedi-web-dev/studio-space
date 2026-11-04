@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
+import type { FormEvent, ChangeEvent } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-
-const API_URL = "http://localhost:8000";
+import { API_URL } from "@/lib/api";
 
 const categories = [
   "Photo Studio",
@@ -73,16 +73,9 @@ export default function EditStudioPage() {
 
     const fetchStudio = async () => {
       try {
-        const { data: tokenData, error: tokenError } = await authClient.token();
-
-        if (tokenError || !tokenData?.token) {
-          throw new Error("Authentication failed. Please login again.");
-        }
-
         const response = await fetch(`${API_URL}/api/studios/${studioId}`, {
-          headers: {
-            Authorization: `Bearer ${tokenData.token}`,
-          },
+          method: "GET",
+          credentials: "include",
         });
 
         const result = await response.json();
@@ -108,6 +101,7 @@ export default function EditStudioPage() {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong.",
         );
+
         router.replace("/my-listings");
       } finally {
         setLoading(false);
@@ -119,9 +113,7 @@ export default function EditStudioPage() {
 
   // Handle input changes
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -147,6 +139,7 @@ export default function EditStudioPage() {
 
     if (!session) {
       toast.error("Please login first.");
+      router.replace("/sign-in");
       return;
     }
 
@@ -177,18 +170,12 @@ export default function EditStudioPage() {
     try {
       setUpdating(true);
 
-      const { data: tokenData, error: tokenError } = await authClient.token();
-
-      if (tokenError || !tokenData?.token) {
-        throw new Error("Authentication failed. Please login again.");
-      }
-
       const response = await fetch(`${API_URL}/api/studios/${studioId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${tokenData.token}`,
         },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -212,43 +199,47 @@ export default function EditStudioPage() {
 
   if (isPending || loading || !session) {
     return (
-      <main className="flex min-h-[60vh] items-center justify-center bg-[#f8f7f4]">
-        <p className="text-sm text-gray-500">Loading studio...</p>
+      <main className="flex min-h-[60vh] items-center justify-center bg-[#f8f7f4] transition-colors duration-300 dark:bg-[#111827]">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Loading studio...
+        </p>
       </main>
     );
   }
 
   const inputClass =
-    "mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 outline-none transition focus:border-[#9bc83f] focus:ring-2 focus:ring-[#c7f36b]/30";
+    "mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-[#9bc83f] focus:ring-2 focus:ring-[#c7f36b]/30 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400";
 
-  const labelClass = "text-sm font-semibold text-gray-700";
+  const labelClass = "text-sm font-semibold text-gray-700 dark:text-gray-200";
 
   return (
-    <main className="min-h-screen bg-[#f8f7f4] px-5 py-12">
+    <main className="min-h-screen bg-[#f8f7f4] px-5 py-12 transition-colors duration-300 dark:bg-[#111827]">
       <div className="mx-auto max-w-4xl">
+        {/* Page Header */}
         <div className="mb-8">
           <Link
             href="/my-listings"
-            className="text-sm font-semibold text-[#759c2c] hover:underline"
+            className="text-sm font-semibold text-[#759c2c] transition hover:underline dark:text-[#c7f36b]"
           >
             ← Back to My Listings
           </Link>
 
-          <h1 className="mt-4 text-3xl font-extrabold text-[#191919]">
+          <h1 className="mt-4 text-3xl font-extrabold text-[#191919] dark:text-white">
             Edit Studio
           </h1>
 
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             Update your studio information and save your changes.
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-7 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8"
+          className="space-y-7 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-colors duration-300 dark:border-gray-700 dark:bg-gray-800 sm:p-8"
         >
+          {/* Studio Information */}
           <section>
-            <h2 className="mb-5 text-lg font-bold text-gray-900">
+            <h2 className="mb-5 text-lg font-bold text-gray-900 dark:text-white">
               Studio Information
             </h2>
 
@@ -346,21 +337,28 @@ export default function EditStudioPage() {
                   required
                 />
 
+                {/* Image Preview */}
                 {formData.image && (
-                  <img
-                    src={formData.image}
-                    alt="Studio preview"
-                    className="mt-4 h-48 w-full rounded-xl object-cover"
-                  />
+                  <div className="relative mt-4 h-48 w-full overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700">
+                    <Image
+                      src={formData.image}
+                      alt="Studio preview"
+                      fill
+                      unoptimized
+                      sizes="(max-width: 768px) 100vw, 800px"
+                      className="object-cover"
+                    />
+                  </div>
                 )}
               </div>
             </div>
           </section>
 
-          <div className="border-t border-gray-100" />
+          <div className="border-t border-gray-100 dark:border-gray-700" />
 
+          {/* Studio Amenities */}
           <section>
-            <h2 className="text-lg font-bold text-gray-900">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
               Studio Amenities
             </h2>
 
@@ -368,7 +366,7 @@ export default function EditStudioPage() {
               {availableAmenities.map((amenity) => (
                 <label
                   key={amenity}
-                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 p-3 text-sm text-gray-700 transition hover:border-[#9bc83f]"
+                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 p-3 text-sm text-gray-700 transition hover:border-[#9bc83f] dark:border-gray-600 dark:text-gray-200 dark:hover:border-[#c7f36b]"
                 >
                   <input
                     type="checkbox"
@@ -382,10 +380,11 @@ export default function EditStudioPage() {
             </div>
           </section>
 
-          <div className="border-t border-gray-100" />
+          <div className="border-t border-gray-100 dark:border-gray-700" />
 
+          {/* Detailed Overview */}
           <section>
-            <h2 className="mb-5 text-lg font-bold text-gray-900">
+            <h2 className="mb-5 text-lg font-bold text-gray-900 dark:text-white">
               Detailed Overview
             </h2>
 
@@ -402,10 +401,11 @@ export default function EditStudioPage() {
             />
           </section>
 
+          {/* Form Actions */}
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <Link
               href="/my-listings"
-              className="rounded-xl border border-gray-200 px-6 py-3 text-center text-sm font-semibold text-gray-700"
+              className="rounded-xl border border-gray-200 px-6 py-3 text-center text-sm font-semibold text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
             >
               Cancel
             </Link>

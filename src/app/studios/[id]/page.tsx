@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+import { API_URL } from "@/lib/api";
 
 interface IStudio {
   _id: string;
@@ -42,9 +44,13 @@ export default function StudioDetailsPage() {
 
   // Get Studio Details
   useEffect(() => {
+    let active = true;
+
     const fetchStudio = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/studios/${id}`);
+        const response = await fetch(`${API_URL}/api/studios/${id}`, {
+          credentials: "include",
+        });
 
         const result = await response.json();
 
@@ -52,19 +58,29 @@ export default function StudioDetailsPage() {
           throw new Error(result.message || "Failed to load studio.");
         }
 
-        setStudio(result.data);
+        if (active) {
+          setStudio(result.data);
+        }
       } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Something went wrong.",
-        );
+        if (active) {
+          toast.error(
+            error instanceof Error ? error.message : "Something went wrong.",
+          );
+        }
       } finally {
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     };
 
     if (id) {
       fetchStudio();
     }
+
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   // Calculate Booking Hours
@@ -89,78 +105,69 @@ export default function StudioDetailsPage() {
     : 0;
 
   // Booking Submit
- 
-const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+  const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  if (!session) {
-    toast.error("Please login to book this studio.");
-    router.push("/sign-in");
-    return;
-  }
-
-  if (!bookingDate || !startTime || !endTime) {
-    toast.error("Please fill in all booking fields.");
-    return;
-  }
-
-  if (totalHours <= 0) {
-    toast.error("End time must be later than start time.");
-    return;
-  }
-
-  try {
-    setBookingLoading(true);
-
-    // Get JWT token
-    const { data: tokenData, error: tokenError } = await authClient.token();
-
-    if (tokenError || !tokenData?.token) {
-      throw new Error("Authentication failed. Please login again.");
+    if (!session) {
+      toast.error("Please login to book this studio.");
+      router.push("/sign-in");
+      return;
     }
 
-    // Send booking request to backend
-    const response = await fetch("http://localhost:8000/api/bookings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${tokenData.token}`,
-      },
-      body: JSON.stringify({
-        studioId: id,
-        bookingDate,
-        startTime,
-        endTime,
-      }),
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || "Booking failed.");
+    if (!bookingDate || !startTime || !endTime) {
+      toast.error("Please fill in all booking fields.");
+      return;
     }
 
-    toast.success("Booking request submitted successfully!");
+    if (totalHours <= 0) {
+      toast.error("End time must be later than start time.");
+      return;
+    }
 
-    // Reset booking form
-    setBookingDate("");
-    setStartTime("");
-    setEndTime("");
-  } catch (error) {
-    toast.error(
-      error instanceof Error ? error.message : "Something went wrong.",
-    );
-  } finally {
-    setBookingLoading(false);
-  }
-};
+    try {
+      setBookingLoading(true);
 
+      const response = await fetch(`${API_URL}/api/bookings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          studioId: id,
+          bookingDate,
+          startTime,
+          endTime,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Booking failed.");
+      }
+
+      toast.success("Booking request submitted successfully!");
+
+      setBookingDate("");
+      setStartTime("");
+      setEndTime("");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong.",
+      );
+    } finally {
+      setBookingLoading(false);
+    }
+  };
 
   // Loading State
   if (loading || isPending) {
     return (
-      <main className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-gray-500">Loading studio details...</p>
+      <main className="flex min-h-[60vh] items-center justify-center bg-[#f8f7f4] px-5 dark:bg-[#111827]">
+        <p className="text-gray-500 dark:text-gray-400">
+          Loading studio details...
+        </p>
       </main>
     );
   }
@@ -168,12 +175,14 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
   // Not Found
   if (!studio) {
     return (
-      <main className="flex min-h-[60vh] flex-col items-center justify-center px-5">
-        <h1 className="text-2xl font-bold text-gray-900">Studio Not Found</h1>
+      <main className="flex min-h-[60vh] flex-col items-center justify-center bg-[#f8f7f4] px-5 dark:bg-[#111827]">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Studio Not Found
+        </h1>
 
         <Link
           href="/studios"
-          className="mt-5 rounded-xl bg-[#c7f36b] px-6 py-3 font-semibold text-gray-900"
+          className="mt-5 rounded-xl bg-[#c7f36b] px-6 py-3 font-semibold text-gray-900 transition hover:bg-[#b8e65b]"
         >
           Explore Studios
         </Link>
@@ -182,22 +191,26 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
   }
 
   return (
-    <main className="min-h-screen bg-[#f8f7f4] px-5 py-12">
+    <main className="min-h-screen bg-[#f8f7f4] px-5 py-12 transition-colors duration-300 dark:bg-[#111827]">
       <div className="mx-auto max-w-7xl">
         {/* Back Button */}
         <Link
           href="/studios"
-          className="mb-6 inline-flex text-sm font-semibold text-gray-600 hover:text-[#759c2c]"
+          className="mb-6 inline-flex text-sm font-semibold text-gray-600 transition hover:text-[#759c2c] dark:text-gray-300 dark:hover:text-[#c7f36b]"
         >
           ← Back to Studios
         </Link>
 
         {/* Studio Image */}
-        <div className="overflow-hidden rounded-3xl bg-white">
-          <img
+        <div className="relative h-[300px] overflow-hidden rounded-3xl bg-gray-200 dark:bg-gray-800 sm:h-[450px]">
+          <Image
             src={studio.image}
             alt={studio.title}
-            className="h-[300px] w-full object-cover sm:h-[450px]"
+            fill
+            priority
+            unoptimized
+            sizes="(max-width: 768px) 100vw, 1200px"
+            className="object-cover"
           />
         </div>
 
@@ -206,55 +219,66 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
           {/* Studio Information */}
           <div className="space-y-7 lg:col-span-2">
             <div>
-              <span className="rounded-full bg-[#c7f36b]/40 px-4 py-2 text-sm font-semibold text-gray-800">
+              <span className="rounded-full bg-[#c7f36b]/40 px-4 py-2 text-sm font-semibold text-gray-800 dark:text-[#d9f99d]">
                 {studio.category}
               </span>
 
-              <h1 className="mt-5 text-3xl font-extrabold text-gray-900 sm:text-4xl">
+              <h1 className="mt-5 text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
                 {studio.title}
               </h1>
 
-              <p className="mt-3 text-gray-500">Location: {studio.location}</p>
+              <p className="mt-3 text-gray-500 dark:text-gray-400">
+                Location: {studio.location}
+              </p>
             </div>
 
             {/* Studio Details */}
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl bg-white p-5">
-                <p className="text-sm text-gray-500">Hourly Rate</p>
-                <p className="mt-2 text-xl font-bold text-gray-900">
+              <div className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Hourly Rate
+                </p>
+
+                <p className="mt-2 text-xl font-bold text-gray-900 dark:text-white">
                   ${studio.hourlyRate}
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-white p-5">
-                <p className="text-sm text-gray-500">Capacity</p>
-                <p className="mt-2 text-xl font-bold text-gray-900">
+              <div className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Capacity
+                </p>
+
+                <p className="mt-2 text-xl font-bold text-gray-900 dark:text-white">
                   {studio.capacity} People
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-white p-5">
-                <p className="text-sm text-gray-500">Security Deposit</p>
-                <p className="mt-2 text-xl font-bold text-gray-900">
+              <div className="rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Security Deposit
+                </p>
+
+                <p className="mt-2 text-xl font-bold text-gray-900 dark:text-white">
                   ${studio.securityDeposit}
                 </p>
               </div>
             </div>
 
             {/* Description */}
-            <section className="rounded-2xl bg-white p-6">
-              <h2 className="text-xl font-bold text-gray-900">
+            <section className="rounded-2xl bg-white p-6 shadow-sm dark:bg-gray-800">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 About This Studio
               </h2>
 
-              <p className="mt-4 whitespace-pre-line text-sm leading-7 text-gray-600">
+              <p className="mt-4 whitespace-pre-line text-sm leading-7 text-gray-600 dark:text-gray-300">
                 {studio.description}
               </p>
             </section>
 
             {/* Amenities */}
-            <section className="rounded-2xl bg-white p-6">
-              <h2 className="text-xl font-bold text-gray-900">
+            <section className="rounded-2xl bg-white p-6 shadow-sm dark:bg-gray-800">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 Studio Amenities
               </h2>
 
@@ -263,24 +287,26 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
                   {studio.amenities.map((amenity) => (
                     <span
                       key={amenity}
-                      className="rounded-xl bg-gray-100 px-4 py-2 text-sm text-gray-700"
+                      className="rounded-xl bg-gray-100 px-4 py-2 text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-200"
                     >
                       {amenity}
                     </span>
                   ))}
                 </div>
               ) : (
-                <p className="mt-4 text-sm text-gray-500">
+                <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
                   No amenities listed.
                 </p>
               )}
             </section>
 
             {/* Host Information */}
-            <section className="rounded-2xl bg-white p-6">
-              <h2 className="text-xl font-bold text-gray-900">Hosted By</h2>
+            <section className="rounded-2xl bg-white p-6 shadow-sm dark:bg-gray-800">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                Hosted By
+              </h2>
 
-              <p className="mt-3 text-gray-700">
+              <p className="mt-3 text-gray-700 dark:text-gray-300">
                 {studio.host?.name || "Studio Host"}
               </p>
             </section>
@@ -288,12 +314,14 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
 
           {/* Booking Form */}
           <aside>
-            <div className="sticky top-24 rounded-2xl bg-white p-6 shadow-sm">
-              <p className="text-sm text-gray-500">Starting from</p>
+            <div className="sticky top-24 rounded-2xl bg-white p-6 shadow-sm dark:bg-gray-800">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Starting from
+              </p>
 
-              <h2 className="mt-1 text-3xl font-extrabold text-gray-900">
+              <h2 className="mt-1 text-3xl font-extrabold text-gray-900 dark:text-white">
                 ${studio.hourlyRate}
-                <span className="text-sm font-normal text-gray-500">
+                <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                   {" "}
                   / hour
                 </span>
@@ -302,7 +330,7 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
               <form onSubmit={handleBooking} className="mt-6 space-y-5">
                 {/* Booking Date */}
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">
                     Booking Date
                   </label>
 
@@ -312,13 +340,13 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
                     min={new Date().toLocaleDateString("en-CA")}
                     value={bookingDate}
                     onChange={(e) => setBookingDate(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#759c2c]"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-[#759c2c] dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                   />
                 </div>
 
                 {/* Start Time */}
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">
                     Start Time
                   </label>
 
@@ -327,13 +355,13 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
                     required
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#759c2c]"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-[#759c2c] dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                   />
                 </div>
 
                 {/* End Time */}
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">
                     End Time
                   </label>
 
@@ -342,29 +370,29 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
                     required
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[#759c2c]"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-[#759c2c] dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                   />
                 </div>
 
                 {/* Price Calculation */}
-                <div className="rounded-xl bg-[#f8f7f4] p-4">
-                  <div className="flex justify-between text-sm text-gray-600">
+                <div className="rounded-xl bg-[#f8f7f4] p-4 dark:bg-gray-700">
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
                     <span>Booking Hours</span>
                     <span>{totalHours}</span>
                   </div>
 
-                  <div className="mt-3 flex justify-between text-sm text-gray-600">
+                  <div className="mt-3 flex justify-between text-sm text-gray-600 dark:text-gray-300">
                     <span>Hourly Cost</span>
                     <span>${totalHours * studio.hourlyRate}</span>
                   </div>
 
-                  <div className="mt-3 flex justify-between text-sm text-gray-600">
+                  <div className="mt-3 flex justify-between text-sm text-gray-600 dark:text-gray-300">
                     <span>Security Deposit</span>
                     <span>${studio.securityDeposit}</span>
                   </div>
 
-                  <div className="mt-4 border-t border-gray-200 pt-4">
-                    <div className="flex justify-between font-bold text-gray-900">
+                  <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
+                    <div className="flex justify-between font-bold text-gray-900 dark:text-white">
                       <span>Estimated Total</span>
                       <span>${totalPrice}</span>
                     </div>
@@ -380,7 +408,7 @@ const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
                   {bookingLoading ? "Submitting..." : "Book Now"}
                 </button>
 
-                <p className="text-center text-xs text-gray-500">
+                <p className="text-center text-xs text-gray-500 dark:text-gray-400">
                   Your booking will be subject to host approval.
                 </p>
               </form>
