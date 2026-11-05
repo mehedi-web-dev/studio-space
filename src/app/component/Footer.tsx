@@ -159,7 +159,7 @@ const Footer = () => {
 
               <p className="flex items-center gap-2">
                 <Phone size={16} />
-                +880 1XXX-XXXXXX
+                +880 1815-111111
               </p>
 
               <p className="flex items-center gap-2">
