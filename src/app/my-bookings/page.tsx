@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { API_URL } from "@/lib/api";
+import Container from "../component/Container";
 
 interface IBooking {
   _id: string;
@@ -145,8 +146,8 @@ export default function MyBookingsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f8f7f4] px-5 py-12 transition-colors duration-300 dark:bg-[#111827]">
-      <div className="mx-auto max-w-7xl">
+    <main className="min-h-screen bg-[#f8f7f4] py-12 transition-colors duration-300 dark:bg-[#111827]">
+      <Container>
         {/* Page Header */}
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
@@ -344,7 +345,7 @@ export default function MyBookingsPage() {
             ))}
           </div>
         )}
-      </div>
+      </Container>
 
       {/* Cancel Booking Confirmation Modal */}
       {selectedBooking && (

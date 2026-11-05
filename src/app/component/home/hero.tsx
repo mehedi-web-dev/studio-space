@@ -5,6 +5,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { FaArrowRight } from "react-icons/fa6";
 
+import Container from "../Container";
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -41,7 +43,8 @@ const slides = [
 
 export default function HeroSlider() {
   return (
-    <section className="mx-auto max-w-7xl px-3 pt-4 sm:px-5 sm:pt-6">
+    <section className="pt-4 sm:pt-6">
+      <Container>
       <Swiper
         modules={[Autoplay, Navigation, Pagination]}
         slidesPerView={1}
@@ -106,6 +109,7 @@ export default function HeroSlider() {
           </SwiperSlide>
         ))}
       </Swiper>
+      </Container>
     </section>
   );
 }

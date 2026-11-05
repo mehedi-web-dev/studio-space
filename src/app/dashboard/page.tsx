@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { API_URL } from "@/lib/api";
+import Container from "../component/Container";
 
 interface IStudio {
   _id: string;
@@ -150,8 +151,8 @@ export default function DashboardPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#f8f7f4] px-5 py-12 transition-colors duration-300 dark:bg-[#111827]">
-      <div className="mx-auto max-w-7xl">
+    <main className="min-h-screen bg-[#f8f7f4] py-12 transition-colors duration-300 dark:bg-[#111827]">
+      <Container>
         {/* Dashboard Header */}
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
@@ -280,7 +281,7 @@ export default function DashboardPage() {
             </Link>
           </div>
         </section>
-      </div>
+      </Container>
     </main>
   );
 }

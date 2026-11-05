@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { API_URL } from "@/lib/api";
+import Container from "../Container";
 
 interface IStudio {
   _id: string;
@@ -46,8 +47,8 @@ export default function FeaturedStudios() {
   }, []);
 
   return (
-    <section className="bg-[#f8f7f4] px-5 py-16 transition-colors duration-300 dark:bg-[#121212]">
-      <div className="mx-auto max-w-7xl">
+    <section className="bg-[#f8f7f4] py-16 transition-colors duration-300 dark:bg-[#121212]">
+      <Container>
         {/* Section Heading */}
         <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
@@ -158,7 +159,7 @@ export default function FeaturedStudios() {
             ))}
           </div>
         )}
-      </div>
+      </Container>
     </section>
   );
 }

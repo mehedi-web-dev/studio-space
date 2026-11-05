@@ -7,6 +7,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+import Container from "../Container";
+
 const steps = [
   {
     number: "01",
@@ -41,9 +43,9 @@ export default function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="scroll-mt-24 bg-[#f8f7f4] px-5 py-20 transition-colors duration-300 dark:bg-[#121212]"
+      className="scroll-mt-24 bg-[#f8f7f4] py-20 transition-colors duration-300 dark:bg-[#121212]"
     >
-      <div className="mx-auto max-w-7xl">
+      <Container>
         {/* Section Heading */}
         <div className="mx-auto mb-14 max-w-2xl text-center">
           <p className="text-sm font-bold uppercase tracking-widest text-[#759c2c] dark:text-[#c7f36b]">
@@ -111,7 +113,7 @@ export default function HowItWorks() {
             <ArrowRight size={17} />
           </Link>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

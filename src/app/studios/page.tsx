@@ -4,6 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { API_URL } from "@/lib/api";
+import Container from "../component/Container";
 
 interface IStudio {
   _id: string;
@@ -133,8 +134,8 @@ export default function ExploreStudiosPage() {
     "w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 outline-none transition focus:border-[#759c2c] dark:border-[#383838] dark:bg-[#252525] dark:text-white dark:placeholder:text-gray-500 dark:focus:border-[#c7f36b]";
 
   return (
-    <main className="min-h-screen bg-[#f8f7f4] px-5 py-12 transition-colors duration-300 dark:bg-[#121212]">
-      <div className="mx-auto max-w-7xl">
+    <main className="min-h-screen bg-[#f8f7f4] py-12 transition-colors duration-300 dark:bg-[#121212]">
+      <Container>
         {/* Page Header */}
         <div className="mb-10 text-center">
           <p className="text-sm font-bold tracking-widest text-[#759c2c] dark:text-[#c7f36b]">
@@ -338,7 +339,7 @@ export default function ExploreStudiosPage() {
             ))}
           </div>
         )}
-      </div>
+      </Container>
     </main>
   );
 }

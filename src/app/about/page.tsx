@@ -12,6 +12,8 @@ import {
   Users,
 } from "lucide-react";
 
+import Container from "../component/Container";
+
 const creativeCategories = [
   {
     icon: Camera,
@@ -66,10 +68,10 @@ export default function AboutPage() {
   return (
     <main className="min-h-screen bg-[#f8f7f4] dark:bg-gray-950">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-[#171717] px-5 py-24 text-white sm:py-32">
+      <section className="relative overflow-hidden bg-[#171717] py-24 text-white sm:py-32">
         <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-[#c7f36b]/10 blur-3xl" />
 
-        <div className="relative mx-auto max-w-5xl text-center">
+        <Container className="relative text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#c7f36b] text-[#171717]">
             <Aperture size={34} />
           </div>
@@ -97,12 +99,12 @@ export default function AboutPage() {
             Explore Studios
             <ArrowRight size={19} />
           </Link>
-        </div>
+        </Container>
       </section>
 
       {/* Who We Are */}
-      <section className="px-5 py-20 sm:py-24">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
+      <section className="py-20 sm:py-24">
+        <Container className="grid items-center gap-12 lg:grid-cols-2">
           <div>
             <p className="text-sm font-bold uppercase tracking-widest text-[#759c2c]">
               Who We Are
@@ -168,12 +170,12 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Mission, Vision and Community */}
-      <section className="bg-white px-5 py-20 dark:bg-gray-900 sm:py-24">
-        <div className="mx-auto max-w-7xl">
+      <section className="bg-white py-20 dark:bg-gray-900 sm:py-24">
+        <Container>
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-sm font-bold uppercase tracking-widest text-[#759c2c]">
               What Drives Us
@@ -213,12 +215,12 @@ export default function AboutPage() {
               );
             })}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Creative Spaces */}
-      <section className="px-5 py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl">
+      <section className="py-20 sm:py-24">
+        <Container>
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-sm font-bold uppercase tracking-widest text-[#759c2c]">
               What You Can Discover
@@ -258,12 +260,12 @@ export default function AboutPage() {
               );
             })}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* CTA */}
       <section className="px-5 pb-20">
-        <div className="mx-auto max-w-7xl rounded-3xl bg-[#171717] px-6 py-16 text-center text-white sm:px-12">
+        <div className="mx-auto w-full max-w-6xl rounded-3xl bg-[#171717] px-6 py-16 text-center text-white sm:px-12">
           <h2 className="text-3xl font-extrabold sm:text-4xl">
             Ready to Create Something Amazing?
           </h2>

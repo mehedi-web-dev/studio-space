@@ -7,6 +7,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { API_URL } from "@/lib/api";
+import Container from "../component/Container";
 
 const categories = [
   "Photo Studio",
@@ -162,8 +163,9 @@ export default function AddStudioPage() {
   const dividerClass = "border-t border-gray-100 dark:border-[#333333]";
 
   return (
-    <main className="min-h-screen bg-[#f8f7f4] px-5 py-12 transition-colors duration-300 dark:bg-[#121212]">
-      <div className="mx-auto max-w-4xl">
+    <main className="min-h-screen bg-[#f8f7f4] py-12 transition-colors duration-300 dark:bg-[#121212]">
+      <Container>
+        <div className="mx-auto max-w-4xl">
         {/* Page Heading */}
         <div className="mb-8">
           <p className="text-sm font-semibold text-[#759c2c] dark:text-[#c7f36b]">
@@ -424,7 +426,8 @@ export default function AddStudioPage() {
             {loading ? "Creating Studio..." : "Create Studio"}
           </button>
         </form>
-      </div>
+        </div>
+      </Container>
     </main>
   );
 }

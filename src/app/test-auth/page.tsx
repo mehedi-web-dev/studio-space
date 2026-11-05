@@ -32,7 +32,7 @@ export default function TestAuthPage() {
   };
 
   return (
-    <main className="mx-auto max-w-2xl px-5 py-20">
+    <main className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
       <h1 className="text-2xl font-bold">JWT Authentication Test</h1>
 
       <p className="mt-3 text-gray-500">

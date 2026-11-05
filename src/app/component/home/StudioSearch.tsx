@@ -10,6 +10,8 @@ import {
   FaClock,
 } from "react-icons/fa6";
 
+import Container from "../Container";
+
 const categories = [
   "Photo Studio",
   "Film Stage",
@@ -55,7 +57,8 @@ export default function StudioSearch() {
     "mb-2 flex items-center gap-2 text-xs font-bold text-[#444444] dark:text-gray-300";
 
   return (
-    <section className="relative z-20 mx-auto -mt-8 w-full max-w-6xl px-4 sm:-mt-10 sm:px-6">
+    <section className="relative z-20 -mt-8 sm:-mt-10">
+      <Container>
       <div className="rounded-2xl border border-[#e8e7e2] bg-white p-5 shadow-[0_15px_50px_rgba(0,0,0,0.08)] transition-colors duration-300 dark:border-[#383838] dark:bg-[#1c1c1c] dark:shadow-[0_15px_50px_rgba(0,0,0,0.25)] sm:p-7">
         {/* Section Heading */}
         <div className="mb-6">
@@ -172,6 +175,7 @@ export default function StudioSearch() {
           </div>
         </form>
       </div>
+      </Container>
     </section>
   );
 }

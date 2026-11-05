@@ -8,6 +8,8 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 
+import Container from "../Container";
+
 const categories = [
   {
     title: "Photo Studios",
@@ -43,8 +45,8 @@ const categories = [
 
 export default function BrowseCategories() {
   return (
-    <section className="bg-white px-5 py-16 transition-colors duration-300 dark:bg-[#121212]">
-      <div className="mx-auto max-w-7xl">
+    <section className="bg-white py-16 transition-colors duration-300 dark:bg-[#121212]">
+      <Container>
         {/* Section Heading */}
         <div className="mb-10 text-center">
           <p className="text-sm font-bold uppercase tracking-wider text-[#759c2c] dark:text-[#c7f36b]">
@@ -97,7 +99,7 @@ export default function BrowseCategories() {
             );
           })}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

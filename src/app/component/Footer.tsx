@@ -8,6 +8,8 @@ import {
   FaXTwitter,
 } from "react-icons/fa6";
 
+import Container from "./Container";
+
 const Footer = () => {
   const quickLinks = [
     { name: "Home", href: "/" },
@@ -26,7 +28,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-[#101828] text-white">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <Container className="py-14">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand and Mission */}
           <div>
@@ -186,7 +188,7 @@ const Footer = () => {
             </Link>
           </div>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 };

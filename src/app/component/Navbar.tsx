@@ -21,6 +21,8 @@ import {
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 
+import Container from "./Container";
+
 // Theme Toggle Component
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -165,7 +167,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#e8e7e2] bg-[#f8f7f4]/95 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-950/95">
-      <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <Container className="flex h-[76px] items-center justify-between">
         {/* Logo */}
         <Link
           href="/"
@@ -333,7 +335,7 @@ export default function Navbar() {
             {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
-      </div>
+      </Container>
 
       {/* Mobile Navigation */}
       {isMenuOpen && (

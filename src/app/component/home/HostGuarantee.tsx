@@ -1,5 +1,7 @@
 import { ShieldCheck, BadgeCheck, Wrench, Headset } from "lucide-react";
 
+import Container from "../Container";
+
 const guarantees = [
   {
     number: "01",
@@ -33,8 +35,8 @@ const guarantees = [
 
 export default function HostGuarantee() {
   return (
-    <section className="bg-white px-5 py-20 transition-colors duration-300 dark:bg-[#121212]">
-      <div className="mx-auto max-w-7xl">
+    <section className="bg-white py-20 transition-colors duration-300 dark:bg-[#121212]">
+      <Container>
         {/* Section Heading */}
         <div className="mx-auto mb-14 max-w-2xl text-center">
           <p className="text-sm font-bold uppercase tracking-widest text-[#759c2c] dark:text-[#c7f36b]">
@@ -84,7 +86,7 @@ export default function HostGuarantee() {
             );
           })}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

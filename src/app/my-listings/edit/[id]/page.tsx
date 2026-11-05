@@ -8,6 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { API_URL } from "@/lib/api";
+import Container from "../../../component/Container";
 
 const categories = [
   "Photo Studio",
@@ -213,8 +214,9 @@ export default function EditStudioPage() {
   const labelClass = "text-sm font-semibold text-gray-700 dark:text-gray-200";
 
   return (
-    <main className="min-h-screen bg-[#f8f7f4] px-5 py-12 transition-colors duration-300 dark:bg-[#111827]">
-      <div className="mx-auto max-w-4xl">
+    <main className="min-h-screen bg-[#f8f7f4] py-12 transition-colors duration-300 dark:bg-[#111827]">
+      <Container>
+        <div className="mx-auto max-w-4xl">
         {/* Page Header */}
         <div className="mb-8">
           <Link
@@ -419,7 +421,8 @@ export default function EditStudioPage() {
             </button>
           </div>
         </form>
-      </div>
+        </div>
+      </Container>
     </main>
   );
 }
