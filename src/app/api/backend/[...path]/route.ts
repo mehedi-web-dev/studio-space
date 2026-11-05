@@ -1,7 +1,5 @@
 import type { NextRequest } from "next/server";
 
-// Local: http://localhost:8000/api
-// Production: https://studio-space-server-sooty.vercel.app/api
 const BACKEND_API_URL =
   process.env.BACKEND_API_URL ??
   "https://studio-space-server-sooty.vercel.app/api";
@@ -15,6 +13,8 @@ const HOP_BY_HOP = new Set([
   "trailer",
   "transfer-encoding",
   "upgrade",
+  "content-encoding",
+  "content-length",
 ]);
 
 export const runtime = "nodejs";
@@ -47,7 +47,10 @@ async function proxy(
     if (accept) headers.set("accept", accept);
     if (cookie) headers.set("cookie", cookie);
 
-    const hasBody = request.method !== "GET" && request.method !== "HEAD";
+    // Request an uncompressed response from the backend.
+    headers.set("accept-encoding", "identity");
+
+    const hasBody = !["GET", "HEAD"].includes(request.method);
 
     const body = hasBody ? await request.arrayBuffer() : undefined;
 
@@ -82,7 +85,10 @@ async function proxy(
       );
     }
 
-    return new Response(backendResponse.body, {
+    // Read the response body before creating the new response.
+    const responseBody = await backendResponse.arrayBuffer();
+
+    return new Response(responseBody.byteLength > 0 ? responseBody : null, {
       status: backendResponse.status,
       statusText: backendResponse.statusText,
       headers: responseHeaders,
