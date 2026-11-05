@@ -1,25 +1,11 @@
 import type { NextRequest } from "next/server";
 
-/**
- * Same-origin proxy for the Express backend.
- *
- * Frontend:  /api/backend/<path>            (?query preserved)
- * Backend:   ${BACKEND_API_URL}/<path>
- *
- * e.g. /api/backend/studios  ->  .../api/studios
- *      /api/backend/api/studios -> .../api/studios (also accepted, since
- *      existing pages call `${API_URL}/api/studios`)
- *
- * The browser only ever talks to this Next.js origin, so Better Auth
- * HTTPOnly cookies are sent same-origin; the proxy forwards the incoming
- * Cookie header to the backend server-side. No Authorization/Bearer
- * headers or secrets are exposed to the browser.
- */
-
+// Local: http://localhost:8000/api
+// Production: https://studio-space-server-sooty.vercel.app/api
 const BACKEND_API_URL =
-  process.env.BACKEND_API_URL ?? "https://studio-space-server-sooty.vercel.app/api";
+  process.env.BACKEND_API_URL ??
+  "https://studio-space-server-sooty.vercel.app/api";
 
-// Hop-by-hop headers must never be forwarded.
 const HOP_BY_HOP = new Set([
   "connection",
   "keep-alive",
@@ -38,33 +24,34 @@ async function proxy(
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> },
 ) {
-  const { path } = await context.params;
-
   try {
-    // Build the backend URL from the configured base URL. A leading "api"
-    // segment is dropped because BACKEND_API_URL already ends with "/api";
-    // this makes both /api/backend/studios and /api/backend/api/studios map
-    // to .../api/studios on the backend.
-    const segments = path[0]?.toLowerCase() === "api" ? path.slice(1) : path;
-    const query = request.nextUrl.search;
-    const target = `${BACKEND_API_URL.replace(/\/+$/, "")}/${segments
-      .map(encodeURIComponent)
-      .join("/")}${query}`;
+    const { path } = await context.params;
 
-    // Forward content-type, accept and cookies. Explicitly drop
-    // Authorization so browser-held bearer tokens never cross domains.
+    // Avoid duplicating /api in the backend URL.
+    const segments = path[0]?.toLowerCase() === "api" ? path.slice(1) : path;
+
+    const baseURL = BACKEND_API_URL.replace(/\/+$/, "");
+
+    const targetURL = `${baseURL}/${segments
+      .map(encodeURIComponent)
+      .join("/")}${request.nextUrl.search}`;
+
+    // Forward required headers and Better Auth cookies.
     const headers = new Headers();
+
     const contentType = request.headers.get("content-type");
-    if (contentType) headers.set("content-type", contentType);
     const accept = request.headers.get("accept");
-    if (accept) headers.set("accept", accept);
     const cookie = request.headers.get("cookie");
+
+    if (contentType) headers.set("content-type", contentType);
+    if (accept) headers.set("accept", accept);
     if (cookie) headers.set("cookie", cookie);
 
     const hasBody = request.method !== "GET" && request.method !== "HEAD";
+
     const body = hasBody ? await request.arrayBuffer() : undefined;
 
-    const backendResponse = await fetch(target, {
+    const backendResponse = await fetch(targetURL, {
       method: request.method,
       headers,
       body: body && body.byteLength > 0 ? body : undefined,
@@ -72,16 +59,22 @@ async function proxy(
       cache: "no-store",
     });
 
+    // Forward backend response headers.
     const responseHeaders = new Headers();
+
     backendResponse.headers.forEach((value, key) => {
       const lower = key.toLowerCase();
-      if (HOP_BY_HOP.has(lower) || lower === "set-cookie") return;
+
+      if (HOP_BY_HOP.has(lower) || lower === "set-cookie") {
+        return;
+      }
+
       responseHeaders.append(key, value);
     });
 
-    // Pass backend cookies through, but strip any Domain attribute so they
-    // are stored for this (frontend) origin instead of the backend domain.
+    // Forward cookies without backend Domain restrictions.
     const setCookies = backendResponse.headers.getSetCookie?.() ?? [];
+
     for (const cookieValue of setCookies) {
       responseHeaders.append(
         "set-cookie",
@@ -95,8 +88,11 @@ async function proxy(
       headers: responseHeaders,
     });
   } catch (error) {
+    console.error("Backend proxy error:", error);
+
     return Response.json(
       {
+        success: false,
         message:
           error instanceof Error
             ? error.message
